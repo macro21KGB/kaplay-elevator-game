@@ -24,7 +24,7 @@ loadSound("error", "assets/error.wav")
 
 k.volume(0.8)
 
-const BUTTON_NUMBERS = [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+const BUTTON_NUMBERS = [10, 11, 12, 7, 8, 9, 4, 5, 6, 1, 2, 3, 0]
 
 class MathQuestionGenerator {
     operators = ["+", "-", "*"] as const
@@ -53,7 +53,20 @@ class MathQuestionGenerator {
     }
 
     evaluateQuestion(question: string) {
-        return eval(question)
+        const firstPart = question.split(" ")[0]
+        const operator = question.split(" ")[1]
+        const secondPart = question.split(" ")[2]
+
+        switch (operator) {
+            case "+":
+                return parseInt(firstPart) + parseInt(secondPart)
+            case "-":
+                return parseInt(firstPart) - parseInt(secondPart)
+            case "*":
+                return parseInt(firstPart) * parseInt(secondPart)
+            default:
+                return 0
+        }
     }
 
 }
@@ -74,6 +87,19 @@ scene("main", () => {
         pos(width() / 2, height() / 2 + 100),
         anchor("center"),
     ]);
+
+    add([
+        text("Use the buttons to answer the math questions"),
+        pos(width() / 2, height() / 2 + 150),
+        anchor("center"),
+    ])
+
+    add([
+        text("Made with Kaplay"),
+        pos(width() / 2, height() - 50),
+        anchor("center"),
+        color(Color.fromHex("#aeaeae"))
+    ])
 
     onKeyPress("space", () => {
         go("game");
@@ -133,7 +159,6 @@ scene("game", () => {
 
     scoreText.loop(1, () => {
         scoreText.time -= 1
-        k.debug.log(scoreText.time)
         scoreText.text = `${scoreText.time}`
     })
 
@@ -269,7 +294,6 @@ scene("game", () => {
             const y = OFFSET_FROM_TOP + row * 100
 
             createElevatorButton(value, k.vec2(x, y), (floor) => {
-                k.debug.log("Button clicked " + floor)
                 current_floor = floor
                 elevatorDisplay.text = `${current_floor}`
 
