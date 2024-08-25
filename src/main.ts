@@ -1,4 +1,5 @@
-import kaplay, { Vec2 } from "kaplay"
+import kaplay, { Comp, Vec2 } from "kaplay"
+import { onUpdate } from "kaplay/dist/declaration/game"
 
 const k = kaplay({
     global: false,
@@ -106,10 +107,27 @@ scene("main", () => {
     })
 })
 
+export interface ScoreComp extends Comp {
+    increment: (value: number) => void,
+    decrement: (value: number) => void,
+    set: (value: number) => void,
+    get: () => number,
+    reset: () => void,
+}
 
 
 scene("game", () => {
 
+
+    // Looping background music
+    const bgm_music = play("bgm", {
+        loop: true,
+        speed: 0.8,
+    })
+
+    bgm_music.onEnd(() => {
+        bgm_music.play()
+    })
 
     const ELEVATOR_PANEL_WIDTH = 400
     let current_floor = 0
@@ -176,10 +194,7 @@ scene("game", () => {
         k.z(-10)
     ])
 
-    play("bgm", {
-        loop: true,
-        paused: false,
-    })
+
 
 
     const elevatorPanel = add([
