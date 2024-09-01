@@ -29,6 +29,7 @@ const BUTTON_NUMBERS = [10, 11, 12, 7, 8, 9, 4, 5, 6, 1, 2, 3, 0]
 
 class MathQuestionGenerator {
     operators = ["+", "-", "*"] as const
+    lastResult = -1
 
     generateQuestion() {
 
@@ -36,15 +37,17 @@ class MathQuestionGenerator {
 
         while (!valid) {
             const operator = this.operators[Math.floor(Math.random() * this.operators.length)]
-            let a = Math.floor(Math.random() * 20)
-            let b = Math.floor(Math.random() * 20)
+            let a = Math.floor(Math.random() * 20 + 1)
+            let b = Math.floor(Math.random() * 20 + 1)
 
             const possibleEquation = `${a} ${operator} ${b}`
+            const questionSolution = this.evaluateQuestion(possibleEquation)
 
-            if (this.evaluateQuestion(possibleEquation) >= 0 && this.evaluateQuestion(possibleEquation) <= 11) {
+            if (questionSolution >= 0 && questionSolution <= 11)
                 valid = true
-            }
+
             if (valid) {
+                this.lastResult = questionSolution
                 return possibleEquation;
             }
 
@@ -187,14 +190,12 @@ scene("game", () => {
         }
     })
 
-    const backgroundSprite = add([
+    add([
         k.sprite("background", {
             height: height(),
         }),
         k.z(-10)
     ])
-
-
 
 
     const elevatorPanel = add([
@@ -225,6 +226,7 @@ scene("game", () => {
         const button = add([
             k.circle(25),
             pos(cPos),
+            outline(3, Color.BLACK),
             area(),
             color(Color.fromHex("#ffffff")),
             anchor("center"),
@@ -243,14 +245,14 @@ scene("game", () => {
         )
 
         button.onHoverUpdate(() => {
-            button.use(outline(2, Color.BLACK))
+            button.outline.width = 5
             button.color = Color.fromHex("#dedede")
 
         })
 
         button.onHoverEnd(() => {
             button.color = Color.fromHex("#ffffff")
-            button.unuse("outline")
+            button.outline.width = 3
         })
 
         button.onClick(() => {
